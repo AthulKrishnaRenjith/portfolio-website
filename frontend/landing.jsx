@@ -433,6 +433,7 @@ const Landing = () => {
                                 <li>Generates beatmaps in &lt;30s per track using latent diffusion.</li>
                                 <li>Trained on a large dataset of osu! maps, it automates beatmapping with 92% alignment accuracy.</li>
                                 <li>CLI tool + visual validation with spectrograms.</li>
+                                <li>Developed in collaboration with <a href="https://artiom.me/" target="_blank" rel="noreferrer" className="text-slate-400 hover:text-white">Artiom Cebotari</a></li>
                             </ul>
                         </Card>
                         <div className="aspect-video bg-slate-900/80 rounded-xl border border-slate-700/50 flex items-center justify-center order-1 lg:order-2 overflow-hidden">
