@@ -1,517 +1,1120 @@
-import React, { useState } from 'react';
-import { FaGithub, FaLinkedin, FaEnvelope, FaRobot, FaBrain, FaCode, FaMicrochip, FaDownload, FaLaptopCode, FaGraduationCap } from 'react-icons/fa';
-import { SiRos, SiOpencv, SiPytorch, SiDocker, SiNvidia, SiCplusplus, SiPython, SiCheckmarx } from 'react-icons/si';
-import { motion } from 'framer-motion';
+import React, { useEffect, useRef, useState } from 'react';
+import { FaGithub, FaEnvelope } from 'react-icons/fa';
+import { FaLinkedin } from 'react-icons/fa';
 import strideDemo from './assets/stride_demo.mp4';
 import uhRacingDemo from './assets/uh_racing_demo.mp4';
 import osuBeatmapDemo from './assets/osu_beatmap_demo.mp4';
 import profileImage from './assets/photo_formal.jpg';
 
-// Animation Variants
-const fadeInUp = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: { duration: 0.6, ease: "easeOut" }
-    }
-};
+/* ─────────────────────────────────────────────
+   STYLES
+   Injected once into <head> — keeps JSX clean
+   and avoids a separate CSS module dependency.
+───────────────────────────────────────────── */
+const STYLES = `
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
+ 
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+  :root {
+    --ink:        #1a1714;
+    --paper:      #f5f0e8;
+    --paper-mid:  #ede7d9;
+    --paper-dark: #d4cbba;
+    --amber:      #c47a1e;
+    --amber-light:#f5e4c0;
+    --muted:      #6b6258;
+    --serif:      'Playfair Display', Georgia, serif;
+    --mono:       'IBM Plex Mono', monospace;
+    --sans:       'IBM Plex Sans', system-ui, sans-serif;
+  }
+ 
+  html { scroll-behavior: smooth; }
+ 
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-weight: 300;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+ 
+  /* ── scrollbar ── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--paper); }
+  ::-webkit-scrollbar-thumb { background: var(--paper-dark); }
+ 
+  /* ── NAV ── */
+  .p-nav {
+    position: fixed;
+    top: 0; left: 0;
+    width: 220px; height: 100vh;
+    border-right: 1px solid var(--paper-dark);
+    background: var(--paper);
+    padding: 3rem 2rem;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+  }
+  .p-nav__name {
+    font-family: var(--serif);
+    font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 0.4rem;
+    letter-spacing: -0.01em;
+  }
+  .p-nav__title {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    color: var(--amber);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 2.5rem;
+  }
+  .p-nav__links {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  .p-nav__link {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--paper-mid);
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .p-nav__link::before {
+    content: '';
+    width: 0;
+    height: 1px;
+    background: var(--amber);
+    transition: width 0.25s;
+    flex-shrink: 0;
+  }
+  .p-nav__link:hover { color: var(--ink); }
+  .p-nav__link:hover::before { width: 14px; }
+  .p-nav__link--active { color: var(--ink); }
+  .p-nav__link--active::before { width: 14px; }
+ 
+  .p-nav__contacts {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .p-nav__contact {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    transition: color 0.2s;
+    word-break: break-all;
+  }
+  .p-nav__contact:hover { color: var(--amber); }
+  .p-nav__contact-icon {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+ 
+  /* ── MOBILE NAV ── */
+  .p-mobile-nav {
+    display: none;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--paper);
+    border-bottom: 1px solid var(--paper-dark);
+    padding: 1rem 1.5rem;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .p-mobile-nav__name {
+    font-family: var(--serif);
+    font-size: 0.95rem;
+    font-weight: 700;
+  }
+  .p-mobile-nav__links {
+    display: flex;
+    gap: 1.25rem;
+  }
+  .p-mobile-nav__link {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    color: var(--muted);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+ 
+  /* ── MAIN ── */
+  .p-main {
+    margin-left: 220px;
+    min-height: 100vh;
+  }
+ 
+  /* ── HERO ── */
+  .p-hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-bottom: 1px solid var(--paper-dark);
+  }
+  .p-hero__left {
+    padding: 5rem 4rem 4rem;
+    border-right: 1px solid var(--paper-dark);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+  .p-hero__eyebrow {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+  }
+  .p-hero__name {
+    font-family: var(--serif);
+    font-size: clamp(3rem, 4.5vw, 4.5rem);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.5rem;
+  }
+  .p-hero__name em {
+    font-style: italic;
+    color: var(--amber);
+  }
+  .p-hero__lede {
+    font-size: 1rem;
+    color: var(--muted);
+    max-width: 380px;
+    line-height: 1.7;
+    border-left: 2px solid var(--amber);
+    padding-left: 1rem;
+    margin-bottom: 2.5rem;
+  }
+  .p-hero__ctas {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+  .p-hero__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 0.6rem 1.1rem;
+    border: 1px solid var(--ink);
+    color: var(--ink);
+    transition: background 0.15s, color 0.15s;
+  }
+  .p-hero__cta:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .p-hero__cta--amber {
+    background: var(--amber);
+    border-color: var(--amber);
+    color: var(--paper);
+  }
+  .p-hero__cta--amber:hover {
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+ 
+  .p-hero__right {
+    display: flex;
+    flex-direction: column;
+  }
+  .p-hero__photo {
+    flex: 1;
+    border-bottom: 1px solid var(--paper-dark);
+    overflow: hidden;
+    position: relative;
+    background: var(--paper-mid);
+  }
+  .p-hero__photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    filter: grayscale(15%) contrast(1.05);
+    opacity: 0.9;
+    display: block;
+  }
+  .p-hero__stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .p-hero__stat {
+    padding: 1.5rem;
+    border-right: 1px solid var(--paper-dark);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .p-hero__stat:last-child { border-right: none; }
+  .p-stat__num {
+    font-family: var(--serif);
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--ink);
+  }
+  .p-stat__label {
+    font-family: var(--mono);
+    font-size: 0.55rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-top: 0.3rem;
+  }
+ 
+  /* ── SECTION ── */
+  .p-section {
+    border-bottom: 1px solid var(--paper-dark);
+  }
+  .p-section__header {
+    padding: 2rem 4rem 1.5rem;
+    border-bottom: 1px solid var(--paper-mid);
+    display: flex;
+    align-items: baseline;
+    gap: 1.5rem;
+  }
+  .p-section__num {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    color: var(--amber);
+    letter-spacing: 0.12em;
+  }
+  .p-section__title {
+    font-family: var(--serif);
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .p-section__body {
+    padding: 3rem 4rem;
+  }
+ 
+  /* ── SKILLS ── */
+  .p-skills {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .p-skill {
+    padding: 2rem;
+    border-right: 1px solid var(--paper-mid);
+    border-bottom: 1px solid var(--paper-mid);
+  }
+  .p-skill:nth-child(2n) { border-right: none; }
+  .p-skill:nth-last-child(-n+2) { border-bottom: none; }
+  .p-skill__cat {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--amber);
+    margin-bottom: 0.75rem;
+  }
+  .p-skill__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .p-tag {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    padding: 0.2rem 0.55rem;
+    border: 1px solid var(--paper-dark);
+    color: var(--ink);
+    letter-spacing: 0.03em;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    cursor: default;
+  }
+  .p-tag:hover {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+ 
+  /* ── EXPERIENCE ── */
+  .p-exp {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 2rem;
+    padding: 2.5rem 0;
+    border-bottom: 1px solid var(--paper-mid);
+  }
+  .p-exp:last-child { border-bottom: none; }
+  .p-exp__period {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+    padding-top: 0.15rem;
+  }
+  .p-exp__org {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--amber);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .p-exp__loc {
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    color: var(--muted);
+    margin-top: 0.3rem;
+  }
+  .p-exp__role {
+    font-family: var(--serif);
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.02em;
+  }
+  .p-exp__bullets {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+  .p-exp__bullets li {
+    font-size: 0.85rem;
+    color: var(--muted);
+    padding-left: 1.2rem;
+    position: relative;
+    line-height: 1.6;
+  }
+  .p-exp__bullets li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--paper-dark);
+  }
+ 
+  /* ── PROJECTS ── */
+  .p-projects {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .p-project {
+    padding: 2.5rem;
+    border-right: 1px solid var(--paper-mid);
+    border-bottom: 1px solid var(--paper-mid);
+    display: flex;
+    flex-direction: column;
+  }
+  .p-project:nth-child(2n) { border-right: none; }
+  .p-project:last-child { border-bottom: none; }
+  .p-project--featured {
+    grid-column: 1 / -1;
+    border-right: none;
+  }
+  .p-project--video {
+    padding: 0;
+    overflow: hidden;
+  }
+  .p-project--video video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    min-height: 260px;
+  }
+  .p-project__num {
+    font-family: var(--serif);
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--paper-mid);
+    line-height: 1;
+    margin-bottom: 0.75rem;
+  }
+  .p-project__name {
+    font-family: var(--serif);
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.3rem;
+  }
+  .p-project__date {
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    margin-bottom: 0.75rem;
+  }
+  .p-project__stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-bottom: 1rem;
+  }
+  .p-project__tag {
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    padding: 0.15rem 0.5rem;
+    background: var(--paper-mid);
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+  .p-project__desc {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.65;
+    margin-bottom: 1rem;
+    flex: 1;
+  }
+  .p-project__bullets {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 1rem;
+  }
+  .p-project__bullets li {
+    font-size: 0.8rem;
+    color: var(--muted);
+    padding-left: 1.1rem;
+    position: relative;
+    line-height: 1.5;
+  }
+  .p-project__bullets li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--amber);
+    font-size: 0.7rem;
+  }
+  .p-project__link {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    color: var(--amber);
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: auto;
+    align-self: flex-start;
+  }
+  .p-project__link:hover { text-decoration: underline; }
+ 
+  /* ── EDUCATION ── */
+  .p-edu {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .p-edu__block {
+    padding: 2.5rem;
+    border-right: 1px solid var(--paper-mid);
+  }
+  .p-edu__block:last-child { border-right: none; }
+  .p-edu__degree {
+    font-family: var(--serif);
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+    line-height: 1.3;
+  }
+  .p-edu__school {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--amber);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.4rem;
+  }
+  .p-edu__period {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    color: var(--muted);
+    margin-bottom: 0.75rem;
+  }
+  .p-edu__badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.2rem 0.6rem;
+    border: 1px solid var(--amber);
+    color: var(--amber);
+  }
+  .p-edu__thesis {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 0.75rem;
+    font-style: italic;
+    line-height: 1.5;
+  }
+  .p-edu__spacer { margin-top: 2rem; }
+  .p-edu__cat {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--amber);
+    margin-bottom: 1rem;
+  }
+  .p-certs {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+  }
+  .p-cert {
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--paper-mid);
+    font-size: 0.82rem;
+    color: var(--muted);
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    line-height: 1.4;
+  }
+  .p-cert:last-child { border-bottom: none; }
+  .p-cert::before {
+    content: '✓';
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--amber);
+    flex-shrink: 0;
+  }
+ 
+  /* ── FOOTER ── */
+  .p-footer {
+    padding: 2rem 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--paper-dark);
+  }
+  .p-footer__copy {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+  .p-footer__tagline {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 0.85rem;
+    color: var(--paper-dark);
+  }
+ 
+  /* ── RESPONSIVE ── */
+  @media (max-width: 960px) {
+    .p-nav { display: none; }
+    .p-mobile-nav { display: flex; }
+    .p-main { margin-left: 0; }
+    .p-hero { grid-template-columns: 1fr; min-height: auto; }
+    .p-hero__right { display: none; }
+    .p-hero__left { padding: 4rem 1.75rem 3rem; min-height: 90vh; }
+    .p-section__header { padding: 1.5rem 1.75rem 1.25rem; }
+    .p-section__body { padding: 2rem 1.75rem; }
+    .p-skills { grid-template-columns: 1fr; }
+    .p-skill { border-right: none !important; }
+    .p-skill:nth-last-child(-n+2) { border-bottom: 1px solid var(--paper-mid); }
+    .p-skill:last-child { border-bottom: none; }
+    .p-exp { grid-template-columns: 1fr; gap: 0.5rem; }
+    .p-projects { grid-template-columns: 1fr; }
+    .p-project--featured { grid-column: 1; }
+    .p-project { border-right: none !important; }
+    .p-project--video { display: none; }
+    .p-edu { grid-template-columns: 1fr; }
+    .p-edu__block { border-right: none; border-bottom: 1px solid var(--paper-mid); padding: 2rem 1.75rem; }
+    .p-edu__block:last-child { border-bottom: none; }
+    .p-footer { flex-direction: column; gap: 0.5rem; text-align: center; padding: 1.5rem; }
+  }
+`;
 
-const staggerContainer = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.1
-        }
-    }
-};
+/* ─────────────────────────────────────────────
+   DATA
+───────────────────────────────────────────── */
+const NAV_LINKS = [
+    { href: '#skills', label: 'Skills' },
+    { href: '#experience', label: 'Experience' },
+    { href: '#projects', label: 'Projects' },
+    { href: '#education', label: 'Education' },
+];
 
-const scaleIn = {
-    hidden: { scale: 0.8, opacity: 0 },
-    visible: {
-        scale: 1,
-        opacity: 1,
-        transition: { duration: 0.5 }
-    }
-};
+const SKILLS = [
+    {
+        cat: 'Languages & Tools',
+        tags: ['Python', 'C++', 'C', 'SQL', 'Git', 'MLOps', 'Jira'],
+    },
+    {
+        cat: 'Edge AI & Deployment',
+        tags: ['TensorRT', 'OpenVINO', 'Jetson', 'Docker', 'ONNX'],
+    },
+    {
+        cat: 'Computer Vision',
+        tags: ['YOLOv5/9', 'PyTorch', 'OpenCV', 'Semantic Seg.', 'Diffusion'],
+    },
+    {
+        cat: 'Robotics & Control',
+        tags: ['ROS2 (Foxy/Jazzy)', 'Gazebo', 'MuJoCo', 'SLAM', 'Kinematics', 'RL Locomotion'],
+    },
+];
 
-const Section = ({ title, children, className = "" }) => (
-    <section className={`py-16 px-4 sm:px-8 max-w-7xl mx-auto ${className}`}>
-        <motion.h2
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={fadeInUp}
-            className="text-3xl font-bold mb-12 text-slate-100 flex items-center gap-3"
-        >
-            <span className="w-2 h-8 bg-blue-500 rounded-full"></span>
-            {title}
-        </motion.h2>
-        <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
-            variants={staggerContainer}
-        >
-            {children}
-        </motion.div>
-    </section>
-);
+const EXPERIENCE = [
+    {
+        period: 'May 2025 — Present',
+        org: 'Univ. of Hertfordshire',
+        loc: 'Hatfield, UK',
+        role: 'Research Engineer',
+        bullets: [
+            'Conducting research on perception and localisation for surface vessels in GNSS-denied environments.',
+            'Developing camera-based mapping and localisation methods for challenging marine conditions.',
+            'Designed shoreline detection and semantic segmentation for coastal structures in simulation.',
+        ],
+    },
+    {
+        period: 'Sep 2024 — Aug 2025',
+        org: 'UH Racing Autonomous',
+        loc: 'Hatfield, UK',
+        role: 'Robotics Engineer',
+        bullets: [
+            'Upgraded YOLOv7 → YOLOv9; deployed on Jetson AGX Orin with TensorRT at 52 FPS / 27 ms latency.',
+            'Improved detection precision by 20%, reaching 92% with Mosaic and HSV-Jitter augmentation.',
+            'Integrated stereo depth sensing; contributed to GraphSLAM, PID tuning, and Pure Pursuit planning.',
+        ],
+    },
+    {
+        period: 'Aug 2021 — Jun 2023',
+        org: 'Robotics Club',
+        loc: 'Kerala, India',
+        role: 'Robotics Engineer',
+        bullets: [
+            'Built a Bluetooth-controlled car (Arduino + custom Android app) showcased to 150+ visitors.',
+            'Developed a Python-based IoT assistant (NodeMCU) controlling 5+ smart devices.',
+            'Designed a C++ IR line-following robot achieving 95% tracking accuracy.',
+        ],
+    },
+    {
+        period: 'Nov 2019',
+        org: 'Torc Infotech',
+        loc: 'Kerala, India',
+        role: 'Ethical Hacking Intern',
+        bullets: [
+            'Malware and RAT analysis; penetration testing with USB Rubber Ducky and Flipper Zero.',
+            'Applied ML-based anomaly detection in network traffic for threat identification.',
+        ],
+    },
+];
 
-const Card = ({ children, className = "" }) => (
-    <motion.div
-        variants={fadeInUp}
-        whileHover={{ y: -5, transition: { duration: 0.2 } }}
-        className={`bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 p-6 rounded-xl hover:bg-slate-800/80 transition-colors duration-300 ${className}`}
-    >
-        {children}
-    </motion.div>
-);
+const PROJECTS = [
+    {
+        num: '01',
+        name: 'MARVIS — Maritime Localisation',
+        date: 'May 2025 — Present',
+        stack: ['ROS2 Jazzy', 'YOLOv5', 'ORB-SLAM3', 'DINOv3'],
+        desc: 'Robust perception and localisation for ships operating in dynamic sea conditions and GNSS-denied environments. Integrates cross-view ground-to-satellite matching with visual SLAM.',
+        bullets: [
+            'YOLOv5 + ORB-SLAM3 integration, improving localisation accuracy by 25%',
+            'DINOv3 ViT satellite feature extraction — 18% improvement in matching accuracy',
+            'Cross-view ground-to-satellite matching achieving 85% top-1 accuracy',
+            'Modular real-time ROS2 pipeline with sensor fusion and on-board processing',
+        ],
+        featured: true,
+    },
+    {
+        num: '02',
+        name: 'Stride OP3 — Humanoid Locomotion',
+        date: 'Apr 2025 — Present',
+        stack: ['MuJoCo', 'JAX/PPO', 'ROS2', 'ONNX', 'Webots'],
+        desc: 'Sim-to-real RL locomotion for the ROBOTIS OP3 humanoid. Full pipeline: MuJoCo Playground training → Webots sim-to-sim validation → ROS2 deployment.',
+        bullets: [
+            '147-dim observation space, 50 Hz policy rate, 4×128 MLP network',
+            'C++ ROS2 controller with ONNX Runtime for on-robot inference',
+            'YOLOv5 perception: 95% precision, ~10 ms latency via OpenVINO INT8',
+        ],
+        github: 'https://github.com/AthulKrishnaRenjith/stride-op3',
+        video: strideDemo,
+    },
+    {
+        num: '03',
+        name: 'Autonomous Racing Perception',
+        date: 'Jan 2025 — May 2025',
+        stack: ['YOLOv9', 'TensorRT', 'Jetson Orin', 'ROS2 Foxy'],
+        desc: 'Low-latency object detection pipeline for Formula Student autonomous race cars — 27 ms end-to-end at 52 FPS on Jetson AGX Orin.',
+        bullets: [
+            'YOLOv9 GELAN-C: 92% precision, 89% recall, 91% mAP@0.5',
+            'TensorRT INT8 deployment maintaining real-time track performance',
+            'Integrated with ROS2 Foxy for live cone detection and localisation',
+        ],
+        github: 'https://github.com/AthulKrishnaRenjith/UH-Racing-Yolov9-custom',
+        video: uhRacingDemo,
+    },
+    {
+        num: '04',
+        name: 'Beatgenie',
+        date: 'Dec 2024 — Mar 2025',
+        stack: ['PyTorch Lightning', 'Diffusion Models', 'Generative AI'],
+        desc: 'Generative ML system that creates osu! standard beatmaps from raw audio using latent diffusion. Generates complete beatmaps in under 30 seconds per track.',
+        bullets: [
+            '92% alignment accuracy on held-out test tracks',
+            'CLI tool with spectrogram visual validation output',
+            'Developed in collaboration with Artiom Cebotari',
+        ],
+        github: 'https://github.com/AthulKrishnaRenjith/Osu-Beatmap',
+        video: osuBeatmapDemo,
+    },
+];
 
-const Badge = ({ text, icon: Icon }) => (
-    <motion.span
-        whileHover={{ scale: 1.05 }}
-        className="inline-flex items-center gap-1.5 px-3 py-1 text-sm font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-full hover:bg-blue-500/20 transition-colors cursor-default"
-    >
-        {Icon && <Icon className="w-3.5 h-3.5" />}
-        {text}
-    </motion.span>
-);
+const CERTS = [
+    'Agile Project Management with Jira Cloud',
+    'Applications of AI for Predictive Maintenance',
+    'Introduction to Deep Learning with OpenCV',
+    'Microsoft Certified: Azure AI Fundamentals',
+    'Microsoft Applied Skills: Data Science & ML with Microsoft Fabric',
+];
 
-const Landing = () => {
+/* ─────────────────────────────────────────────
+   COMPONENTS
+───────────────────────────────────────────── */
+
+/** Injects the stylesheet once */
+function GlobalStyles() {
+    useEffect(() => {
+        const id = 'portfolio-styles';
+        if (document.getElementById(id)) return;
+        const el = document.createElement('style');
+        el.id = id;
+        el.textContent = STYLES;
+        document.head.appendChild(el);
+        return () => {
+            const s = document.getElementById(id);
+            if (s) s.remove();
+        };
+    }, []);
+    return null;
+}
+
+/** Left-rail fixed navigation */
+function Nav({ activeSection }) {
     return (
-        <div className="min-h-screen bg-slate-950 text-slate-300 font-sans selection:bg-blue-500/30 overflow-x-hidden">
+        <nav className="p-nav">
+            <div className="p-nav__name">Athul Krishna<br />Renjith</div>
+            <div className="p-nav__title">Robotics &amp; AI Engineer</div>
+            <div className="p-nav__links">
+                {NAV_LINKS.map(({ href, label }) => (
+                    <a
+                        key={href}
+                        href={href}
+                        className={`p-nav__link${activeSection === href.slice(1) ? ' p-nav__link--active' : ''}`}
+                    >
+                        {label}
+                    </a>
+                ))}
+            </div>
+            <div className="p-nav__contacts">
+                <a href="mailto:renjith.athul.krishna@gmail.com" className="p-nav__contact p-nav__contact-icon">
+                    <FaEnvelope style={{ fontSize: 10 }} /> renjith.athul.krishna@gmail.com
+                </a>
+                <a href="https://github.com/AthulKrishnaRenjith" target="_blank" rel="noopener noreferrer" className="p-nav__contact p-nav__contact-icon">
+                    <FaGithub style={{ fontSize: 10 }} /> AthulKrishnaRenjith
+                </a>
+                <a href="https://www.linkedin.com/in/athulkrishnarenjith" target="_blank" rel="noopener noreferrer" className="p-nav__contact p-nav__contact-icon">
+                    <FaLinkedin style={{ fontSize: 10 }} /> athulkrishnarenjith
+                </a>
+            </div>
+        </nav>
+    );
+}
 
-            {/* Hero Section */}
-            <header className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
-                {/* Abstract Background */}
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-blue-500/20 via-slate-950 to-slate-950" />
-                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-overlay"></div>
-
-                <motion.div
-                    initial="hidden"
-                    animate="visible"
-                    variants={staggerContainer}
-                    className="relative z-10 text-center px-4 max-w-4xl mx-auto"
-                >
-                    {/* Animated Ring */}
-                    <motion.div variants={scaleIn} className="relative mx-auto w-32 h-32 mb-8 group">
-                        <motion.div
-                            animate={{
-                                scale: [1, 1.2, 1],
-                                opacity: [0.2, 0.4, 0.2]
-                            }}
-                            transition={{
-                                duration: 3,
-                                repeat: Infinity,
-                                ease: "easeInOut"
-                            }}
-                            className="absolute inset-0 bg-blue-500 rounded-full blur-xl"
-                        ></motion.div>
-                        <div className="relative w-full h-full bg-slate-900 rounded-full border-2 border-blue-500/30 flex items-center justify-center shadow-2xl overflow-hidden">
-                            <img
-                                src={profileImage}
-                                alt="Athul Krishna Renjith"
-                                className="w-full h-full object-cover"
-                            />
-                        </div>
-                    </motion.div>
-
-                    <motion.h1 variants={fadeInUp} className="text-5xl sm:text-7xl font-bold text-white mb-6 tracking-tight">
-                        Athul Krishna Renjith
-                    </motion.h1>
-                    <motion.p variants={fadeInUp} className="text-xl sm:text-2xl text-blue-400 mb-8 font-light">
-                        Robotics & AI Engineer
-                    </motion.p>
-                    <motion.p variants={fadeInUp} className="text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed mb-10">
-                        Robotics & AI Engineer delivering real time autonomy on embedded hardware.
-                        Turning perception and SLAM research into production ready systems.
-                    </motion.p>
-
-                    <motion.div variants={fadeInUp} className="flex flex-wrap items-center justify-center gap-4">
-                        <motion.a whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} href="mailto:renjith.athul.krishna@gmail.com" className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-medium shadow-lg shadow-blue-900/20 block">
-                            <FaEnvelope /> Email Me
-                        </motion.a>
-                        <motion.a whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} href="https://github.com/AthulKrishnaRenjith" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-medium border border-slate-700 block">
-                            <FaGithub /> GitHub
-                        </motion.a>
-                        <motion.a whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} href="https://www.linkedin.com/in/athulkrishnarenjith" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-medium border border-slate-700 block">
-                            <FaLinkedin /> LinkedIn
-                        </motion.a>
-
-                    </motion.div>
-                </motion.div>
-            </header>
-
-
-
-            {/* Skills Section */}
-            <Section title="Technical Arsenal" className="">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <Card>
-                        <div className="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center mb-4">
-                            <FaCode className="w-6 h-6 text-blue-400" />
-                        </div>
-                        <h3 className="text-lg font-semibold text-white mb-3">Languages & Tools</h3>
-                        <div className="flex flex-wrap gap-2">
-                            {['Python', 'C++', 'C', 'SQL', 'Git', 'MLOps', 'Agile (Jira)'].map(s => (
-                                <Badge key={s} text={s} />
-                            ))}
-                        </div>
-                    </Card>
-                    <Card>
-                        <div className="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center mb-4">
-                            <SiNvidia className="w-6 h-6 text-purple-400" />
-                        </div>
-                        <h3 className="text-lg font-semibold text-white mb-3">Edge AI & Deployment</h3>
-                        <div className="flex flex-wrap gap-2">
-                            {['TensorRT', 'OpenVINO', 'Jetson', 'Docker', 'ONNX'].map(s => (
-                                <Badge key={s} text={s} />
-                            ))}
-                        </div>
-                    </Card>
-                    <Card>
-                        <div className="w-12 h-12 bg-emerald-500/10 rounded-lg flex items-center justify-center mb-4">
-                            <SiOpencv className="w-6 h-6 text-emerald-400" />
-                        </div>
-                        <h3 className="text-lg font-semibold text-white mb-3">Computer Vision</h3>
-                        <div className="flex flex-wrap gap-2">
-                            {['YOLO (v5/v9)', 'PyTorch', 'OpenCV', 'Semantic Seg.', 'Latent Diffusion'].map(s => (
-                                <Badge key={s} text={s} />
-                            ))}
-                        </div>
-                    </Card>
-                    <Card>
-                        <div className="w-12 h-12 bg-orange-500/10 rounded-lg flex items-center justify-center mb-4">
-                            <SiRos className="w-6 h-6 text-orange-400" />
-                        </div>
-                        <h3 className="text-lg font-semibold text-white mb-3">Robotics & Control</h3>
-                        <div className="flex flex-wrap gap-2">
-                            {['ROS2 (Foxy/Jazzy)', 'Gazebo', 'SLAM', 'Kinematics', 'Planning', 'MuJoCo', 'Locomotion', 'Learning Based Humanoid'].map(s => (
-                                <Badge key={s} text={s} />
-                            ))}
-                        </div>
-                    </Card>
-                </div>
-            </Section>
-
-            {/* Experience Section */}
-            <Section title="Professional Experience" className="bg-slate-900/50">
-                <div className="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-700 before:to-transparent">
-
-                    {/* ISE Research */}
-                    <motion.div variants={fadeInUp} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                        <div className="flex items-center justify-center w-10 h-10 rounded-full border border-slate-700 bg-slate-900 group-[.is-active]:border-emerald-500 shadow-xl shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 transition-colors">
-                            <FaLaptopCode className="text-emerald-500 w-5 h-5" />
-                        </div>
-                        <div className="w-full md:w-[calc(50%-2.5rem)] pl-8 md:pl-0 md:pr-14 md:group-even:pl-14">
-                            <Card className="hover:border-emerald-500/30 transition-colors">
-                                <div className="flex justify-between items-start mb-2">
-                                    <div>
-                                        <h3 className="text-xl font-bold text-white">Research Engineer</h3>
-                                        <div className="text-emerald-400 font-medium">University of Hertfordshire</div>
-                                    </div>
-                                    <span className="text-xs font-mono bg-slate-700 px-2 py-1 rounded text-slate-300">May 2025 – Present</span>
-                                </div>
-                                <div className="text-sm text-slate-400 mb-4 font-mono">Hatfield, UK</div>
-                                <ul className="space-y-2 text-slate-300 list-disc list-inside marker:text-emerald-500">
-                                    <li>Conducting research on perception and localisation for surface vessels, focusing on real-time geo-localisation and visual SLAM.</li>
-                                    <li>Developing camera-based mapping and localisation methods tailored for challenging marine environments.</li>
-                                    <li>Designed and evaluated shoreline detection and isolation techniques in simulation.</li>
-                                    <li>Implementing semantic segmentation models to identify coastal structures.</li>
-                                </ul>
-                            </Card>
-                        </div>
-                    </motion.div>
-
-                    {/* UH Racing */}
-                    <motion.div variants={fadeInUp} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-                        <div className="flex items-center justify-center w-10 h-10 rounded-full border border-slate-700 bg-slate-900 shadow-xl shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
-                            <SiRos className="text-blue-500 w-5 h-5" />
-                        </div>
-                        <div className="w-full md:w-[calc(50%-2.5rem)] pl-8 md:pl-0 md:pr-14 md:group-even:pl-14">
-                            <Card>
-                                <div className="flex justify-between items-start mb-2">
-                                    <div>
-                                        <h3 className="text-xl font-bold text-white">Robotics Engineer</h3>
-                                        <div className="text-blue-400 font-medium">UH Racing Autonomous</div>
-                                    </div>
-                                    <span className="text-xs font-mono bg-slate-700 px-2 py-1 rounded text-slate-300">Sep 2024 – Aug 2025</span>
-                                </div>
-                                <div className="text-sm text-slate-400 mb-4 font-mono">Hatfield, UK</div>
-                                <ul className="space-y-2 text-slate-300 list-disc list-inside marker:text-blue-500">
-                                    <li>Upgraded YOLOv7 to YOLOv9, trained on HPC clusters, and deployed on Jetson AGX Orin with TensorRT (52 FPS, 27 ms latency).</li>
-                                    <li>Improved object detection precision by 20 percent, achieving 92 percent precision.</li>
-                                    <li>Applied augmentations (Mosaic, HSV Jitter) to improve robustness in rain, low light, and occluded conditions.</li>
-                                    <li>Integrated stereo depth sensing and validated performance in Gazebo simulation and live autonomous runs.</li>
-                                    <li>Contributed to GraphSLAM for localisation, PID tuning for control, and Pure Pursuit for planning.</li>
-                                </ul>
-                            </Card>
-                        </div>
-                    </motion.div>
-
-                    {/* Robotics Club */}
-                    <motion.div variants={fadeInUp} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-                        <div className="flex items-center justify-center w-10 h-10 rounded-full border border-slate-700 bg-slate-900 shadow-xl shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
-                            <FaMicrochip className="text-amber-500 w-5 h-5" />
-                        </div>
-                        <div className="w-full md:w-[calc(50%-2.5rem)] pl-8 md:pl-0 md:pr-14 md:group-even:pl-14">
-                            <Card>
-                                <div className="flex justify-between items-start mb-2">
-                                    <div>
-                                        <h3 className="text-xl font-bold text-white">Robotics Engineer</h3>
-                                        <div className="text-amber-400 font-medium">Robotics Club</div>
-                                    </div>
-                                    <span className="text-xs font-mono bg-slate-700 px-2 py-1 rounded text-slate-300">Aug 2021 – Jun 2023</span>
-                                </div>
-                                <div className="text-sm text-slate-400 mb-4 font-mono">Kerala, India</div>
-                                <ul className="space-y-2 text-slate-300 list-disc list-inside marker:text-amber-500">
-                                    <li>Led and contributed to embedded systems and autonomous navigation projects.</li>
-                                    <li>Built a Bluetooth-controlled car (Arduino + custom Android app) showcased to 150+ visitors.</li>
-                                    <li>Developed a Python-based IoT assistant (NodeMCU) enabling control of 5+ smart devices.</li>
-                                    <li>Designed a C++ IR line-following robot with 95% tracking accuracy.</li>
-                                </ul>
-                            </Card>
-                        </div>
-                    </motion.div>
-
-                    {/* Torc Infotech */}
-                    <motion.div variants={fadeInUp} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-                        <div className="flex items-center justify-center w-10 h-10 rounded-full border border-slate-700 bg-slate-900 shadow-xl shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
-                            <SiCheckmarx className="text-red-500 w-5 h-5" />
-                        </div>
-                        <div className="w-full md:w-[calc(50%-2.5rem)] pl-8 md:pl-0 md:pr-14 md:group-even:pl-14">
-                            <Card>
-                                <div className="flex justify-between items-start mb-2">
-                                    <div>
-                                        <h3 className="text-xl font-bold text-white">Ethical Hacking Intern</h3>
-                                        <div className="text-red-400 font-medium">Torc Infotech</div>
-                                    </div>
-                                    <span className="text-xs font-mono bg-slate-700 px-2 py-1 rounded text-slate-300">Nov 2019 – Nov 2019</span>
-                                </div>
-                                <div className="text-sm text-slate-400 mb-4 font-mono">Kerala, India</div>
-                                <ul className="space-y-2 text-slate-300 list-disc list-inside marker:text-red-500">
-                                    <li>Analysed malware and RATs, identifying attack vectors and mitigation strategies.</li>
-                                    <li>Applied ethical hacking tools (USB Rubber Ducky, Flipper Zero) and penetration testing.</li>
-                                    <li>Used machine learning for anomaly detection in network traffic.</li>
-                                    <li>Strengthened skills in network security, social engineering awareness, and ethical red teaming.</li>
-                                </ul>
-                            </Card>
-                        </div>
-                    </motion.div>
-
-                </div>
-            </Section>
-
-            {/* Projects Section */}
-            <Section title="Featured Projects" className="">
-                <div className="space-y-12">
-                    {/* MARVIS */}
-                    <div className="grid grid-cols-1 gap-6">
-                        <Card className="h-full flex flex-col p-8">
-                            <div className="mb-6">
-                                <h3 className="text-2xl font-bold text-white mb-2">MARVIS - Maritime Localisation</h3>
-                                <p className="text-blue-400 text-sm mb-4">May 2025 - Present</p>
-                                <div className="flex flex-wrap gap-2 mb-4">
-                                    <Badge text="ROS2 Jazzy" />
-                                    <Badge text="YOLOv5" />
-                                    <Badge text="ORB-SLAM3" />
-                                    <Badge text="DINOv3" />
-                                </div>
-                                <p className="text-slate-300 mb-4 italic">
-                                    Developing a robust perception and localisation system for ships operating in dynamic sea conditions and GNSS-denied environments.
-                                </p>
-                            </div>
-                            <ul className="text-slate-400 space-y-2 flex-grow list-disc list-inside text-sm">
-                                <li>Integrated YOLOv5 with ORB-SLAM3, improving localisation accuracy by 25% in ROS2 Jazzy.</li>
-                                <li>Built a DINOv3 (ViT) based satellite feature extraction model, raising matching accuracy by 18%.</li>
-                                <li>Implemented cross-view ground to satellite matching achieving 85% top-1 accuracy.</li>
-                                <li>Designed semantic segmentation for shoreline isolation and dynamic object feature extraction.</li>
-                                <li>Modular real-time pipeline in ROS2 with sensor fusion and on-board processing.</li>
-                                <li>Validated using maritime simulation and real shoreline datasets for deployment readiness.</li>
-                            </ul>
-                        </Card>
-                    </div>
-
-                    {/* Kidsize */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
-                        <Card className="h-full flex flex-col p-8 order-2 lg:order-1">
-                            <div className="mb-6">
-                                <div className="flex justify-between items-start">
-                                    <h3 className="text-2xl font-bold text-white mb-2">Kidsize Soccer Robots</h3>
-                                    <a href="https://github.com/AthulKrishnaRenjith/stride-op3" target="_blank" rel="noreferrer" className="text-slate-400 hover:text-white"><FaGithub className="w-6 h-6" /></a>
-                                </div>
-                                <p className="text-blue-400 text-sm mb-4">Apr 2025 - Present</p>
-                                <div className="flex flex-wrap gap-2 mb-4">
-                                    <Badge text="OpenVINO" />
-                                    <Badge text="OAK-D" />
-                                    <Badge text="YOLOv5" />
-                                    <Badge text="MuJoCo" />
-                                </div>
-                                <p className="text-slate-300 mb-4 italic">
-                                    Developing a real time perception and control stack for the ROBOTIS OP3 humanoid used by STRIDE in RoboCup KidSize football.
-                                </p>
-                            </div>
-                            <ul className="text-slate-400 space-y-2 flex-grow list-disc list-inside text-sm">
-                                <li>Built a low latency perception pipeline using an OAK D Lite and Myriad X VPU.</li>
-                                <li>Trained and deployed a YOLOv5 model for 6 object classes, achieving 95% precision and 96% mAP@0.5.</li>
-                                <li>Optimised deployment using ONNX and OpenVINO INT8, reducing inference latency from ~70 ms to ~10 ms.</li>
-                                <li>Improved visual robustness during walking and turning through motion blur and camera shake dataset augmentation.</li>
-                                <li>Preparing MuJoCo based simulation and reinforcement learning pipelines for humanoid locomotion.</li>
-                            </ul>
-                        </Card>
-                        <div className="aspect-video bg-slate-900/80 rounded-xl border border-slate-700/50 flex items-center justify-center order-1 lg:order-2 overflow-hidden">
-                            <video
-                                src={strideDemo}
-                                autoPlay
-                                muted
-                                loop
-                                playsInline
-                                className="w-full h-full object-cover"
-                            />
-                        </div>
-                    </div>
-
-                    {/* Racing */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
-                        <div className="aspect-video bg-slate-900/80 rounded-xl border border-slate-700/50 flex items-center justify-center overflow-hidden">
-                            <video
-                                src={uhRacingDemo}
-                                autoPlay
-                                muted
-                                loop
-                                playsInline
-                                className="w-full h-full object-cover"
-                            />
-                        </div>
-                        <Card className="h-full flex flex-col p-8">
-                            <div className="mb-6">
-                                <div className="flex justify-between items-start">
-                                    <h3 className="text-2xl font-bold text-white mb-2">Autonomous Racing Perception</h3>
-                                    <a href="https://github.com/AthulKrishnaRenjith/UH-Racing-Yolov9-custom" target="_blank" rel="noreferrer" className="text-slate-400 hover:text-white"><FaGithub className="w-6 h-6" /></a>
-                                </div>
-                                <p className="text-blue-400 text-sm mb-4">Jan 2025 - May 2025</p>
-                                <div className="flex flex-wrap gap-2 mb-4">
-                                    <Badge text="Jetson Orin" />
-                                    <Badge text="TensorRT" />
-                                    <Badge text="YOLOv9" />
-                                    <Badge text="ROS2 Foxy" />
-                                </div>
-                                <p className="text-slate-300 mb-4 italic">
-                                    Designed and deployed a low latency object detection pipeline for Formula Student autonomous race cars.
-                                </p>
-                            </div>
-                            <ul className="text-slate-400 space-y-2 flex-grow list-disc list-inside text-sm">
-                                <li>Achieved 27 ms end to end latency on Jetson AGX Orin.</li>
-                                <li>Fine tuned YOLOv9 with a GELAN C backbone reaching 92% precision, 89% recall and 91% mAP@0.5.</li>
-                                <li>Deployed with TensorRT maintaining 52 FPS in track conditions.</li>
-                                <li>Integrated with ROS2 Foxy for real time cone detection and localisation.</li>
-                            </ul>
-                        </Card>
-                    </div>
-
-                    {/* Beatgenie */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
-                        <Card className="h-full flex flex-col p-8 order-2 lg:order-1">
-                            <div className="mb-6">
-                                <div className="flex justify-between items-start">
-                                    <h3 className="text-2xl font-bold text-white mb-2">Beatgenie</h3>
-                                    <a href="https://github.com/AthulKrishnaRenjith/Osu-Beatmap" target="_blank" rel="noreferrer" className="text-slate-400 hover:text-white"><FaGithub className="w-6 h-6" /></a>
-                                </div>
-                                <p className="text-blue-400 text-sm mb-4">Dec 2024 - Mar 2025</p>
-                                <div className="flex flex-wrap gap-2 mb-4">
-                                    <Badge text="PyTorch Lightning" />
-                                    <Badge text="Diffusion Models" />
-                                    <Badge text="Generative AI" />
-                                </div>
-                                <p className="text-slate-300 mb-4 italic">
-                                    Beatgenie is a generative ML system that creates osu!standard beatmaps from raw audio using latent diffusion models.
-                                </p>
-                            </div>
-                            <ul className="text-slate-400 space-y-2 flex-grow list-disc list-inside text-sm">
-                                <li>Generates beatmaps in &lt;30s per track using latent diffusion.</li>
-                                <li>Trained on a large dataset of osu! maps, it automates beatmapping with 92% alignment accuracy.</li>
-                                <li>CLI tool + visual validation with spectrograms.</li>
-                                <li>Developed in collaboration with <a href="https://artiom.me/" target="_blank" rel="noreferrer" className="text-slate-400 hover:text-white">Artiom Cebotari</a></li>
-                            </ul>
-                        </Card>
-                        <div className="aspect-video bg-slate-900/80 rounded-xl border border-slate-700/50 flex items-center justify-center order-1 lg:order-2 overflow-hidden">
-                            <video
-                                src={osuBeatmapDemo}
-                                autoPlay
-                                muted
-                                loop
-                                playsInline
-                                className="w-full h-full object-cover"
-                            />
-                        </div>
-                    </div>
-
-                </div>
-            </Section>
-
-            {/* Education & Certs */}
-            <Section title="Education & Certifications" className="bg-slate-900/50">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <motion.div variants={fadeInUp} className="space-y-6">
-                        <h3 className="text-xl font-bold text-slate-100 flex items-center gap-2">
-                            <FaGraduationCap className="text-blue-500" /> Education
-                        </h3>
-                        <Card>
-                            <div className="flex justify-between items-start mb-2">
-                                <div>
-                                    <h4 className="text-lg font-bold text-white">MSc in Artificial Intelligence and Robotics</h4>
-                                    <p className="text-blue-400">University of Hertfordshire</p>
-                                </div>
-                                <span className="bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded text-sm border border-emerald-500/20">Distinction</span>
-                            </div>
-                            <p className="text-xs text-slate-500 mb-3 ml-1">Jan 2024 - May 2025</p>
-                            <p className="text-sm text-slate-400">
-                                <strong>Thesis:</strong> Optimised Perception System for Real-Time Object Detection in Autonomous Racing Vehicles using YOLOv9 and TensorRT
-                            </p>
-                        </Card>
-                        <Card>
-                            <div className="flex justify-between items-start mb-2">
-                                <div>
-                                    <h4 className="text-lg font-bold text-white">B.Tech. in Computer Science and Engineering</h4>
-                                    <p className="text-blue-400">APJ Abdul Kalam Technological University</p>
-                                </div>
-                                <span className="bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded text-sm border border-emerald-500/20">Distinction</span>
-                            </div>
-                            <p className="text-xs text-slate-500 ml-1">Aug 2019 - Aug 2023</p>
-                        </Card>
-                    </motion.div>
-
-                    <motion.div variants={fadeInUp} className="space-y-6">
-                        <h3 className="text-xl font-bold text-slate-100 flex items-center gap-2">
-                            <FaBrain className="text-purple-500" /> Certifications
-                        </h3>
-                        <Card>
-                            <ul className="space-y-4">
-                                {[
-                                    'Agile Project Management with Jira Cloud',
-                                    'Applications of AI for Predictive Maintenance',
-                                    'Introduction to Deep Learning with OpenCV',
-                                    'Microsoft Certified: Azure AI Fundamentals',
-                                    'Microsoft Applied Skills: Implement a Data Science and Machine Learning Solution with Microsoft Fabric'
-                                ].map((cert, i) => (
-                                    <li key={i} className="flex gap-3">
-                                        <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0"></span>
-                                        <span className="text-white font-medium">{cert}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </Card>
-                    </motion.div>
-                </div>
-            </Section>
-
-            <footer className="py-8 text-center text-slate-600 bg-slate-950 border-t border-slate-900">
-                <p>© {new Date().getFullYear()} Athul Krishna Renjith. Built with React & Tailwind CSS.</p>
-            </footer>
+/** Mobile sticky top bar */
+function MobileNav() {
+    return (
+        <div className="p-mobile-nav">
+            <div className="p-mobile-nav__name">Athul Krishna Renjith</div>
+            <div className="p-mobile-nav__links">
+                {NAV_LINKS.map(({ href, label }) => (
+                    <a key={href} href={href} className="p-mobile-nav__link">{label}</a>
+                ))}
+            </div>
         </div>
     );
-};
+}
 
-export default Landing;
+/** Section wrapper */
+function Section({ id, num, title, children, noPadBody = false }) {
+    return (
+        <section id={id} className="p-section">
+            <div className="p-section__header">
+                <span className="p-section__num">{num}</span>
+                <h2 className="p-section__title">{title}</h2>
+            </div>
+            {noPadBody ? children : <div className="p-section__body">{children}</div>}
+        </section>
+    );
+}
+
+/* ── Hero ── */
+function Hero() {
+    return (
+        <header id="hero" className="p-hero">
+            <div className="p-hero__left">
+                <p className="p-hero__eyebrow">Robotics &amp; AI — Hatfield, UK</p>
+                <h1 className="p-hero__name">
+                    Athul<br /><em>Krishna</em><br />Renjith
+                </h1>
+                <p className="p-hero__lede">
+                    Delivering real-time autonomy on embedded hardware.
+                    Turning perception and SLAM research into production-ready systems.
+                </p>
+                <div className="p-hero__ctas">
+                    <a href="mailto:renjith.athul.krishna@gmail.com" className="p-hero__cta p-hero__cta--amber">
+                        <FaEnvelope style={{ fontSize: 11 }} /> Email Me
+                    </a>
+                    <a href="https://github.com/AthulKrishnaRenjith" target="_blank" rel="noopener noreferrer" className="p-hero__cta">
+                        <FaGithub style={{ fontSize: 11 }} /> GitHub
+                    </a>
+                    <a href="https://www.linkedin.com/in/athulkrishnarenjith" target="_blank" rel="noopener noreferrer" className="p-hero__cta">
+                        <FaLinkedin style={{ fontSize: 11 }} /> LinkedIn
+                    </a>
+                </div>
+            </div>
+            <div className="p-hero__right">
+                <div className="p-hero__photo">
+                    <img src={profileImage} alt="Athul Krishna Renjith" />
+                </div>
+                <div className="p-hero__stats">
+                    <div className="p-hero__stat">
+                        <div className="p-stat__num">92%</div>
+                        <div className="p-stat__label">Detection Precision</div>
+                    </div>
+                    <div className="p-hero__stat">
+                        <div className="p-stat__num">27ms</div>
+                        <div className="p-stat__label">Inference Latency</div>
+                    </div>
+                    <div className="p-hero__stat">
+                        <div className="p-stat__num">52fps</div>
+                        <div className="p-stat__label">Track Performance</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+    );
+}
+
+/* ── Skills ── */
+function Skills() {
+    return (
+        <Section id="skills" num="01" title="Technical Skills" noPadBody>
+            <div className="p-skills">
+                {SKILLS.map(({ cat, tags }) => (
+                    <div key={cat} className="p-skill">
+                        <div className="p-skill__cat">{cat}</div>
+                        <div className="p-skill__tags">
+                            {tags.map(t => <span key={t} className="p-tag">{t}</span>)}
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </Section>
+    );
+}
+
+/* ── Experience ── */
+function Experience() {
+    return (
+        <Section id="experience" num="02" title="Experience">
+            {EXPERIENCE.map(({ period, org, loc, role, bullets }) => (
+                <div key={org + period} className="p-exp">
+                    <div>
+                        <div className="p-exp__period">{period}</div>
+                        <div className="p-exp__org">{org}</div>
+                        <div className="p-exp__loc">{loc}</div>
+                    </div>
+                    <div>
+                        <div className="p-exp__role">{role}</div>
+                        <ul className="p-exp__bullets">
+                            {bullets.map((b, i) => <li key={i}>{b}</li>)}
+                        </ul>
+                    </div>
+                </div>
+            ))}
+        </Section>
+    );
+}
+
+/* ── Projects ── */
+function Projects() {
+    const featured = PROJECTS.filter(p => p.featured);
+    const rest = PROJECTS.filter(p => !p.featured);
+
+    return (
+        <Section id="projects" num="03" title="Projects" noPadBody>
+            <div className="p-projects">
+
+                {/* Featured (full-width) */}
+                {featured.map(p => (
+                    <div key={p.num} className="p-project p-project--featured">
+                        <div className="p-project__num">{p.num}</div>
+                        <div className="p-project__name">{p.name}</div>
+                        <div className="p-project__date">{p.date}</div>
+                        <div className="p-project__stack">
+                            {p.stack.map(s => <span key={s} className="p-project__tag">{s}</span>)}
+                        </div>
+                        <p className="p-project__desc">{p.desc}</p>
+                        <ul className="p-project__bullets">
+                            {p.bullets.map((b, i) => <li key={i}>{b}</li>)}
+                        </ul>
+                        {p.github && (
+                            <a href={p.github} target="_blank" rel="noopener noreferrer" className="p-project__link">
+                                github →
+                            </a>
+                        )}
+                    </div>
+                ))}
+
+                {/* Remaining projects: card + video pairs */}
+                {rest.map((p, i) => {
+                    const isEven = i % 2 === 0;
+                    const card = (
+                        <div key={`card-${p.num}`} className="p-project">
+                            <div className="p-project__num">{p.num}</div>
+                            <div className="p-project__name">{p.name}</div>
+                            <div className="p-project__date">{p.date}</div>
+                            <div className="p-project__stack">
+                                {p.stack.map(s => <span key={s} className="p-project__tag">{s}</span>)}
+                            </div>
+                            <p className="p-project__desc">{p.desc}</p>
+                            <ul className="p-project__bullets">
+                                {p.bullets.map((b, j) => <li key={j}>{b}</li>)}
+                            </ul>
+                            {p.github && (
+                                <a href={p.github} target="_blank" rel="noopener noreferrer" className="p-project__link">
+                                    github →
+                                </a>
+                            )}
+                        </div>
+                    );
+                    const videoCell = p.video ? (
+                        <div key={`vid-${p.num}`} className="p-project p-project--video">
+                            <video src={p.video} autoPlay muted loop playsInline />
+                        </div>
+                    ) : (
+                        <div key={`empty-${p.num}`} className="p-project" style={{ background: 'var(--paper-mid)' }} />
+                    );
+
+                    return isEven ? [card, videoCell] : [videoCell, card];
+                })}
+
+            </div>
+        </Section>
+    );
+}
+
+/* ── Education ── */
+function Education() {
+    return (
+        <Section id="education" num="04" title="Education &amp; Certifications" noPadBody>
+            <div className="p-edu">
+                <div className="p-edu__block">
+                    <div className="p-edu__degree">MSc, Artificial Intelligence and Robotics</div>
+                    <div className="p-edu__school">University of Hertfordshire</div>
+                    <div className="p-edu__period">Jan 2024 — May 2025</div>
+                    <span className="p-edu__badge">Distinction</span>
+                    <p className="p-edu__thesis">
+                        Thesis: Optimised Perception System for Real-Time Object Detection in Autonomous Racing Vehicles using YOLOv9 and TensorRT
+                    </p>
+
+                    <div className="p-edu__spacer">
+                        <div className="p-edu__degree">B.Tech., Computer Science and Engineering</div>
+                        <div className="p-edu__school">APJ Abdul Kalam Technological University</div>
+                        <div className="p-edu__period">Aug 2019 — Aug 2023</div>
+                        <span className="p-edu__badge">Distinction</span>
+                    </div>
+                </div>
+                <div className="p-edu__block">
+                    <div className="p-edu__cat">Certifications</div>
+                    <ul className="p-certs">
+                        {CERTS.map(c => <li key={c} className="p-cert">{c}</li>)}
+                    </ul>
+                </div>
+            </div>
+        </Section>
+    );
+}
+
+/* ── Footer ── */
+function Footer() {
+    return (
+        <footer className="p-footer">
+            <span className="p-footer__copy">
+                © {new Date().getFullYear()} Athul Krishna Renjith — Built with React &amp; Tailwind CSS
+            </span>
+            <span className="p-footer__tagline">Perception · Locomotion · Autonomy</span>
+        </footer>
+    );
+}
+
+/* ─────────────────────────────────────────────
+   ACTIVE SECTION TRACKER
+   Highlights the nav link for the section
+   currently in view.
+───────────────────────────────────────────── */
+function useActiveSection(sectionIds) {
+    const [active, setActive] = useState('');
+
+    useEffect(() => {
+        const observers = sectionIds.map(id => {
+            const el = document.getElementById(id);
+            if (!el) return null;
+            const obs = new IntersectionObserver(
+                ([entry]) => { if (entry.isIntersecting) setActive(id); },
+                { threshold: 0.3 }
+            );
+            obs.observe(el);
+            return obs;
+        });
+        return () => observers.forEach(o => o && o.disconnect());
+    }, [sectionIds]);
+
+    return active;
+}
+
+/* ─────────────────────────────────────────────
+   ROOT
+───────────────────────────────────────────── */
+const SECTION_IDS = ['hero', 'skills', 'experience', 'projects', 'education'];
+
+export default function Landing() {
+    const activeSection = useActiveSection(SECTION_IDS);
+
+    return (
+        <>
+            <GlobalStyles />
+            <Nav activeSection={activeSection} />
+            <div className="p-main">
+                <MobileNav />
+                <Hero />
+                <Skills />
+                <Experience />
+                <Projects />
+                <Education />
+                <Footer />
+            </div>
+        </>
+    );
+}
