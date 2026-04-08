@@ -650,142 +650,126 @@ const STYLES = `
    DATA
 ───────────────────────────────────────────── */
 const NAV_LINKS = [
-    { href: '#skills', label: 'Skills' },
-    { href: '#experience', label: 'Experience' },
-    { href: '#projects', label: 'Projects' },
-    { href: '#education', label: 'Education' },
+  { href: '#skills', label: 'Skills' },
+  { href: '#experience', label: 'Experience' },
+  { href: '#projects', label: 'Projects' },
+  { href: '#education', label: 'Education' },
 ];
 
 const SKILLS = [
-    {
-        cat: 'Languages & Tools',
-        tags: ['Python', 'C++', 'C', 'SQL', 'Git', 'MLOps', 'Jira'],
-    },
-    {
-        cat: 'Edge AI & Deployment',
-        tags: ['TensorRT', 'OpenVINO', 'Jetson', 'Docker', 'ONNX'],
-    },
-    {
-        cat: 'Computer Vision',
-        tags: ['YOLOv5/9', 'PyTorch', 'OpenCV', 'Semantic Seg.', 'Diffusion'],
-    },
-    {
-        cat: 'Robotics & Control',
-        tags: ['ROS2 (Foxy/Jazzy)', 'Gazebo', 'MuJoCo', 'SLAM', 'Kinematics', 'RL Locomotion'],
-    },
+  {
+    cat: 'Middleware & Ops:',
+    tags: ['Python', 'Modern C++(17/20)', 'ROS2 (Foxy/Jazzy)', 'Linux', 'Git', 'CI/CD', 'Docker', 'Distributed HPC'],
+  },
+  {
+    cat: 'Perception & SLAM',
+    tags: ['ORB-SLAM3', 'GraphSLAM', 'LiDAR-stereo fusion', 'Point-cloud registration', 'YOLOv5/v9'],
+  },
+  {
+    cat: 'AI & Optimisation',
+    tags: ['PyTorch', 'JAX', 'DINOv3', 'TensorRT', 'OpenVINO', 'ONNX', 'Quantisation', 'Pruning', 'Nsight profiling'],
+  },
+  {
+    cat: 'Control & Sim',
+    tags: ['PID', 'Kinematics', 'PPO', 'Gazebo', 'Webots', 'MuJoCo', 'Sim-to-real', 'PyTest'],
+  },
 ];
 
 const EXPERIENCE = [
-    {
-        period: 'May 2025 — Present',
-        org: 'Univ. of Hertfordshire',
-        loc: 'Hatfield, UK',
-        role: 'Research Engineer',
-        bullets: [
-            'Conducting research on perception and localisation for surface vessels in GNSS-denied environments.',
-            'Developing camera-based mapping and localisation methods for challenging marine conditions.',
-            'Designed shoreline detection and semantic segmentation for coastal structures in simulation.',
-        ],
-    },
-    {
-        period: 'Sep 2024 — Aug 2025',
-        org: 'UH Racing Autonomous',
-        loc: 'Hatfield, UK',
-        role: 'Robotics Engineer',
-        bullets: [
-            'Upgraded YOLOv7 → YOLOv9; deployed on Jetson AGX Orin with TensorRT at 52 FPS / 27 ms latency.',
-            'Improved detection precision by 20%, reaching 92% with Mosaic and HSV-Jitter augmentation.',
-            'Integrated stereo depth sensing; contributed to GraphSLAM, PID tuning, and Pure Pursuit planning.',
-        ],
-    },
-    {
-        period: 'Aug 2021 — Jun 2023',
-        org: 'Robotics Club',
-        loc: 'Kerala, India',
-        role: 'Robotics Engineer',
-        bullets: [
-            'Built a Bluetooth-controlled car (Arduino + custom Android app) showcased to 150+ visitors.',
-            'Developed a Python-based IoT assistant (NodeMCU) controlling 5+ smart devices.',
-            'Designed a C++ IR line-following robot achieving 95% tracking accuracy.',
-        ],
-    },
-    {
-        period: 'Nov 2019',
-        org: 'Torc Infotech',
-        loc: 'Kerala, India',
-        role: 'Ethical Hacking Intern',
-        bullets: [
-            'Malware and RAT analysis; penetration testing with USB Rubber Ducky and Flipper Zero.',
-            'Applied ML-based anomaly detection in network traffic for threat identification.',
-        ],
-    },
+  {
+    period: 'May 2025 — Present',
+    org: 'ISE Research Team, University of Hertfordshire',
+    loc: 'Hatfield, UK',
+    role: 'Research Engineer',
+    bullets: [
+      'Designed and deployed semantic-augmented ORB-SLAM3 localisation pipeline in ROS2 for GNSS-denied ASV',
+      'Reduced accumulated trajectory drift by 28% through dynamic feature filtering and structured benchmarking',
+      'Built a satellite image analysis model using DINOv3 (ViT), improving accuracy by 18% via cross-view geo-localisation',
+      'Deployed on ASV, validating real-time pose accuracy under environmental variability with quantified error bounds',
+      'Implemented testing workflows in PyTest to validate control and perception modules prior to hardware deployment',
+      'Authored system architecture and documentation to support integration and reproducibility across teams',
+    ],
+  },
+  {
+    period: 'Sep 2024 — Aug 2025',
+    org: 'UH Racing Autonomous',
+    loc: 'Hatfield, UK',
+    role: 'Robotics Software Engineer',
+    bullets: [
+      'Optimised YOLOv9 perception system to achieve 52 FPS on Jetson AGX Orin using TensorRT FP16 optimisation',
+      'Reduced end-to-end perception latency by 37% via profiling and kernel-level optimisation using Nsight',
+      'Improved detection precision to 92% and mAP@0.5 to 86% through dataset refinement and migrating YOLOv7 to v9',
+      'Engineered modular C++ perception interfaces enabling sensor abstraction and dynamic reconfiguration',
+      'Analysed system failure cases and implemented mitigation strategies to maintain stability under degraded sensing',
+    ],
+  },
 ];
 
 const PROJECTS = [
-    {
-        num: '01',
-        name: 'MARVIS — Maritime Localisation',
-        date: 'May 2025 — Present',
-        stack: ['ROS2 Jazzy', 'YOLOv5', 'ORB-SLAM3', 'DINOv3'],
-        desc: 'Robust perception and localisation for ships operating in dynamic sea conditions and GNSS-denied environments. Integrates cross-view ground-to-satellite matching with visual SLAM.',
-        bullets: [
-            'YOLOv5 + ORB-SLAM3 integration, improving localisation accuracy by 25%',
-            'DINOv3 ViT satellite feature extraction — 18% improvement in matching accuracy',
-            'Cross-view ground-to-satellite matching achieving 85% top-1 accuracy',
-            'Modular real-time ROS2 pipeline with sensor fusion and on-board processing',
-        ],
-        featured: true,
-    },
-    {
-        num: '02',
-        name: 'Stride OP3 — Humanoid Locomotion',
-        date: 'Apr 2025 — Present',
-        stack: ['MuJoCo', 'JAX/PPO', 'ROS2', 'ONNX', 'Webots'],
-        desc: 'Sim-to-real RL locomotion for the ROBOTIS OP3 humanoid. Full pipeline: MuJoCo Playground training → Webots sim-to-sim validation → ROS2 deployment.',
-        bullets: [
-            '147-dim observation space, 50 Hz policy rate, 4×128 MLP network',
-            'C++ ROS2 controller with ONNX Runtime for on-robot inference',
-            'YOLOv5 perception: 95% precision, ~10 ms latency via OpenVINO INT8',
-        ],
-        github: 'https://github.com/AthulKrishnaRenjith/stride-op3',
-        video: strideDemo,
-    },
-    {
-        num: '03',
-        name: 'Autonomous Racing Perception',
-        date: 'Jan 2025 — May 2025',
-        stack: ['YOLOv9', 'TensorRT', 'Jetson Orin', 'ROS2 Foxy'],
-        desc: 'Low-latency object detection pipeline for Formula Student autonomous race cars — 27 ms end-to-end at 52 FPS on Jetson AGX Orin.',
-        bullets: [
-            'YOLOv9 GELAN-C: 92% precision, 89% recall, 91% mAP@0.5',
-            'TensorRT INT8 deployment maintaining real-time track performance',
-            'Integrated with ROS2 Foxy for live cone detection and localisation',
-        ],
-        github: 'https://github.com/AthulKrishnaRenjith/UH-Racing-Yolov9-custom',
-        video: uhRacingDemo,
-    },
-    {
-        num: '04',
-        name: 'Beatgenie',
-        date: 'Dec 2024 — Mar 2025',
-        stack: ['PyTorch Lightning', 'Diffusion Models', 'Generative AI'],
-        desc: 'Generative ML system that creates osu! standard beatmaps from raw audio using latent diffusion. Generates complete beatmaps in under 30 seconds per track.',
-        bullets: [
-            '92% alignment accuracy on held-out test tracks',
-            'CLI tool with spectrogram visual validation output',
-            'Developed in collaboration with Artiom Cebotari',
-        ],
-        github: 'https://github.com/AthulKrishnaRenjith/Osu-Beatmap',
-        video: osuBeatmapDemo,
-    },
+  {
+    num: '01',
+    name: 'MARVIS - Real-Time Computer Vision System for Autonomous Maritime Localisation',
+    date: 'May 2025 — Present',
+    stack: ['ROS2 Jazzy', 'YOLOv5', 'ORB-SLAM3', 'DINOv3'],
+    desc: 'Robust perception and localisation for ships operating in dynamic sea conditions and GNSS-denied environments. Integrates cross-view ground-to-satellite matching with visual SLAM.',
+    bullets: [
+      'YOLOv5 + ORB-SLAM3 integration, improving localisation accuracy by 25%',
+      'DINOv3 ViT satellite feature extraction — 18% improvement in matching accuracy',
+      'Cross-view ground-to-satellite matching achieving 85% top-1 accuracy',
+      'Modular real-time ROS2 pipeline with sensor fusion and on-board processing',
+    ],
+    featured: true,
+  },
+  {
+    num: '02',
+    name: 'Stride OP3 — Humanoid Locomotion',
+    date: 'Apr 2025 — Present',
+    stack: ['MuJoCo', 'JAX/PPO', 'ROS2', 'ONNX', 'Webots'],
+    desc: 'Sim-to-real RL locomotion for the ROBOTIS OP3 humanoid. Full pipeline: MuJoCo Playground training → Webots sim-to-sim validation → ROS2 deployment.',
+    bullets: [
+      '147-dim observation space, 50 Hz policy rate, 4×128 MLP network',
+      'C++ ROS2 controller with ONNX Runtime for on-robot inference',
+      'YOLOv5 perception: 95% precision, ~10 ms latency via OpenVINO INT8',
+    ],
+    github: 'https://github.com/AthulKrishnaRenjith/stride-op3',
+    video: strideDemo,
+  },
+  {
+    num: '03',
+    name: 'Autonomous Racing Perception',
+    date: 'Jan 2025 — May 2025',
+    stack: ['YOLOv9', 'TensorRT', 'Jetson Orin', 'ROS2 Foxy'],
+    desc: 'Low-latency object detection pipeline for Formula Student autonomous race cars — 27 ms end-to-end at 52 FPS on Jetson AGX Orin.',
+    bullets: [
+      'YOLOv9 GELAN-C: 92% precision, 89% recall, 91% mAP@0.5',
+      'TensorRT INT8 deployment maintaining real-time track performance',
+      'Integrated with ROS2 Foxy for live cone detection and localisation',
+    ],
+    github: 'https://github.com/AthulKrishnaRenjith/UH-Racing-Yolov9-custom',
+    video: uhRacingDemo,
+  },
+  {
+    num: '04',
+    name: 'Beatgenie',
+    date: 'Dec 2024 — Mar 2025',
+    stack: ['PyTorch Lightning', 'Diffusion Models', 'Generative AI'],
+    desc: 'Generative ML system that creates osu! standard beatmaps from raw audio using latent diffusion. Generates complete beatmaps in under 30 seconds per track.',
+    bullets: [
+      '92% alignment accuracy on held-out test tracks',
+      'CLI tool with spectrogram visual validation output',
+      'Developed in collaboration with Artiom Cebotari',
+    ],
+    github: 'https://github.com/AthulKrishnaRenjith/Osu-Beatmap',
+    video: osuBeatmapDemo,
+  },
 ];
 
 const CERTS = [
-    'Agile Project Management with Jira Cloud',
-    'Applications of AI for Predictive Maintenance',
-    'Introduction to Deep Learning with OpenCV',
-    'Microsoft Certified: Azure AI Fundamentals',
-    'Microsoft Applied Skills: Data Science & ML with Microsoft Fabric',
+  'Agile Project Management with Jira Cloud',
+  'Applications of AI for Predictive Maintenance',
+  'Introduction to Deep Learning with OpenCV',
+  'Microsoft Certified: Azure AI Fundamentals',
+  'Microsoft Applied Skills: Data Science & ML with Microsoft Fabric',
 ];
 
 /* ─────────────────────────────────────────────
@@ -794,279 +778,279 @@ const CERTS = [
 
 /** Injects the stylesheet once */
 function GlobalStyles() {
-    useEffect(() => {
-        const id = 'portfolio-styles';
-        if (document.getElementById(id)) return;
-        const el = document.createElement('style');
-        el.id = id;
-        el.textContent = STYLES;
-        document.head.appendChild(el);
-        return () => {
-            const s = document.getElementById(id);
-            if (s) s.remove();
-        };
-    }, []);
-    return null;
+  useEffect(() => {
+    const id = 'portfolio-styles';
+    if (document.getElementById(id)) return;
+    const el = document.createElement('style');
+    el.id = id;
+    el.textContent = STYLES;
+    document.head.appendChild(el);
+    return () => {
+      const s = document.getElementById(id);
+      if (s) s.remove();
+    };
+  }, []);
+  return null;
 }
 
 /** Left-rail fixed navigation */
 function Nav({ activeSection }) {
-    return (
-        <nav className="p-nav">
-            <div className="p-nav__name">Athul Krishna<br />Renjith</div>
-            <div className="p-nav__title">Robotics &amp; AI Engineer</div>
-            <div className="p-nav__links">
-                {NAV_LINKS.map(({ href, label }) => (
-                    <a
-                        key={href}
-                        href={href}
-                        className={`p-nav__link${activeSection === href.slice(1) ? ' p-nav__link--active' : ''}`}
-                    >
-                        {label}
-                    </a>
-                ))}
-            </div>
-            <div className="p-nav__contacts">
-                <a href="mailto:renjith.athul.krishna@gmail.com" className="p-nav__contact p-nav__contact-icon">
-                    <FaEnvelope style={{ fontSize: 10 }} /> renjith.athul.krishna@gmail.com
-                </a>
-                <a href="https://github.com/AthulKrishnaRenjith" target="_blank" rel="noopener noreferrer" className="p-nav__contact p-nav__contact-icon">
-                    <FaGithub style={{ fontSize: 10 }} /> AthulKrishnaRenjith
-                </a>
-                <a href="https://www.linkedin.com/in/athulkrishnarenjith" target="_blank" rel="noopener noreferrer" className="p-nav__contact p-nav__contact-icon">
-                    <FaLinkedin style={{ fontSize: 10 }} /> athulkrishnarenjith
-                </a>
-            </div>
-        </nav>
-    );
+  return (
+    <nav className="p-nav">
+      <div className="p-nav__name">Athul Krishna<br />Renjith</div>
+      <div className="p-nav__title">Robotics &amp; AI Engineer</div>
+      <div className="p-nav__links">
+        {NAV_LINKS.map(({ href, label }) => (
+          <a
+            key={href}
+            href={href}
+            className={`p-nav__link${activeSection === href.slice(1) ? ' p-nav__link--active' : ''}`}
+          >
+            {label}
+          </a>
+        ))}
+      </div>
+      <div className="p-nav__contacts">
+        <a href="mailto:renjith.athul.krishna@gmail.com" className="p-nav__contact p-nav__contact-icon">
+          <FaEnvelope style={{ fontSize: 10 }} /> renjith.athul.krishna@gmail.com
+        </a>
+        <a href="https://github.com/AthulKrishnaRenjith" target="_blank" rel="noopener noreferrer" className="p-nav__contact p-nav__contact-icon">
+          <FaGithub style={{ fontSize: 10 }} /> AthulKrishnaRenjith
+        </a>
+        <a href="https://www.linkedin.com/in/athulkrishnarenjith" target="_blank" rel="noopener noreferrer" className="p-nav__contact p-nav__contact-icon">
+          <FaLinkedin style={{ fontSize: 10 }} /> athulkrishnarenjith
+        </a>
+      </div>
+    </nav>
+  );
 }
 
 /** Mobile sticky top bar */
 function MobileNav() {
-    return (
-        <div className="p-mobile-nav">
-            <div className="p-mobile-nav__name">Athul Krishna Renjith</div>
-            <div className="p-mobile-nav__links">
-                {NAV_LINKS.map(({ href, label }) => (
-                    <a key={href} href={href} className="p-mobile-nav__link">{label}</a>
-                ))}
-            </div>
-        </div>
-    );
+  return (
+    <div className="p-mobile-nav">
+      <div className="p-mobile-nav__name">Athul Krishna Renjith</div>
+      <div className="p-mobile-nav__links">
+        {NAV_LINKS.map(({ href, label }) => (
+          <a key={href} href={href} className="p-mobile-nav__link">{label}</a>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 /** Section wrapper */
 function Section({ id, num, title, children, noPadBody = false }) {
-    return (
-        <section id={id} className="p-section">
-            <div className="p-section__header">
-                <span className="p-section__num">{num}</span>
-                <h2 className="p-section__title">{title}</h2>
-            </div>
-            {noPadBody ? children : <div className="p-section__body">{children}</div>}
-        </section>
-    );
+  return (
+    <section id={id} className="p-section">
+      <div className="p-section__header">
+        <span className="p-section__num">{num}</span>
+        <h2 className="p-section__title">{title}</h2>
+      </div>
+      {noPadBody ? children : <div className="p-section__body">{children}</div>}
+    </section>
+  );
 }
 
 /* ── Hero ── */
 function Hero() {
-    return (
-        <header id="hero" className="p-hero">
-            <div className="p-hero__left">
-                <p className="p-hero__eyebrow">Robotics &amp; AI — Hatfield, UK</p>
-                <h1 className="p-hero__name">
-                    Athul<br /><em>Krishna</em><br />Renjith
-                </h1>
-                <p className="p-hero__lede">
-                    Delivering real-time autonomy on embedded hardware.
-                    Turning perception and SLAM research into production-ready systems.
-                </p>
-                <div className="p-hero__ctas">
-                    <a href="mailto:renjith.athul.krishna@gmail.com" className="p-hero__cta p-hero__cta--amber">
-                        <FaEnvelope style={{ fontSize: 11 }} /> Email Me
-                    </a>
-                    <a href="https://github.com/AthulKrishnaRenjith" target="_blank" rel="noopener noreferrer" className="p-hero__cta">
-                        <FaGithub style={{ fontSize: 11 }} /> GitHub
-                    </a>
-                    <a href="https://www.linkedin.com/in/athulkrishnarenjith" target="_blank" rel="noopener noreferrer" className="p-hero__cta">
-                        <FaLinkedin style={{ fontSize: 11 }} /> LinkedIn
-                    </a>
-                </div>
-            </div>
-            <div className="p-hero__right">
-                <div className="p-hero__photo">
-                    <img src={profileImage} alt="Athul Krishna Renjith" />
-                </div>
-                <div className="p-hero__stats">
-                    <div className="p-hero__stat">
-                        <div className="p-stat__num">92%</div>
-                        <div className="p-stat__label">Detection Precision</div>
-                    </div>
-                    <div className="p-hero__stat">
-                        <div className="p-stat__num">27ms</div>
-                        <div className="p-stat__label">Inference Latency</div>
-                    </div>
-                    <div className="p-hero__stat">
-                        <div className="p-stat__num">52fps</div>
-                        <div className="p-stat__label">Track Performance</div>
-                    </div>
-                </div>
-            </div>
-        </header>
-    );
+  return (
+    <header id="hero" className="p-hero">
+      <div className="p-hero__left">
+        <p className="p-hero__eyebrow">Robotics &amp; AI — Hatfield, UK</p>
+        <h1 className="p-hero__name">
+          Athul<br /><em>Krishna</em><br />Renjith
+        </h1>
+        <p className="p-hero__lede">
+          Delivering real-time autonomy on embedded hardware.
+          Turning perception and SLAM research into production-ready systems.
+        </p>
+        <div className="p-hero__ctas">
+          <a href="mailto:renjith.athul.krishna@gmail.com" className="p-hero__cta p-hero__cta--amber">
+            <FaEnvelope style={{ fontSize: 11 }} /> Email Me
+          </a>
+          <a href="https://github.com/AthulKrishnaRenjith" target="_blank" rel="noopener noreferrer" className="p-hero__cta">
+            <FaGithub style={{ fontSize: 11 }} /> GitHub
+          </a>
+          <a href="https://www.linkedin.com/in/athulkrishnarenjith" target="_blank" rel="noopener noreferrer" className="p-hero__cta">
+            <FaLinkedin style={{ fontSize: 11 }} /> LinkedIn
+          </a>
+        </div>
+      </div>
+      <div className="p-hero__right">
+        <div className="p-hero__photo">
+          <img src={profileImage} alt="Athul Krishna Renjith" />
+        </div>
+        <div className="p-hero__stats">
+          <div className="p-hero__stat">
+            <div className="p-stat__num">92%</div>
+            <div className="p-stat__label">Detection Precision</div>
+          </div>
+          <div className="p-hero__stat">
+            <div className="p-stat__num">27ms</div>
+            <div className="p-stat__label">Inference Latency</div>
+          </div>
+          <div className="p-hero__stat">
+            <div className="p-stat__num">52fps</div>
+            <div className="p-stat__label">Track Performance</div>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
 }
 
 /* ── Skills ── */
 function Skills() {
-    return (
-        <Section id="skills" num="01" title="Technical Skills" noPadBody>
-            <div className="p-skills">
-                {SKILLS.map(({ cat, tags }) => (
-                    <div key={cat} className="p-skill">
-                        <div className="p-skill__cat">{cat}</div>
-                        <div className="p-skill__tags">
-                            {tags.map(t => <span key={t} className="p-tag">{t}</span>)}
-                        </div>
-                    </div>
-                ))}
+  return (
+    <Section id="skills" num="01" title="Technical Skills" noPadBody>
+      <div className="p-skills">
+        {SKILLS.map(({ cat, tags }) => (
+          <div key={cat} className="p-skill">
+            <div className="p-skill__cat">{cat}</div>
+            <div className="p-skill__tags">
+              {tags.map(t => <span key={t} className="p-tag">{t}</span>)}
             </div>
-        </Section>
-    );
+          </div>
+        ))}
+      </div>
+    </Section>
+  );
 }
 
 /* ── Experience ── */
 function Experience() {
-    return (
-        <Section id="experience" num="02" title="Experience">
-            {EXPERIENCE.map(({ period, org, loc, role, bullets }) => (
-                <div key={org + period} className="p-exp">
-                    <div>
-                        <div className="p-exp__period">{period}</div>
-                        <div className="p-exp__org">{org}</div>
-                        <div className="p-exp__loc">{loc}</div>
-                    </div>
-                    <div>
-                        <div className="p-exp__role">{role}</div>
-                        <ul className="p-exp__bullets">
-                            {bullets.map((b, i) => <li key={i}>{b}</li>)}
-                        </ul>
-                    </div>
-                </div>
-            ))}
-        </Section>
-    );
+  return (
+    <Section id="experience" num="02" title="Experience">
+      {EXPERIENCE.map(({ period, org, loc, role, bullets }) => (
+        <div key={org + period} className="p-exp">
+          <div>
+            <div className="p-exp__period">{period}</div>
+            <div className="p-exp__org">{org}</div>
+            <div className="p-exp__loc">{loc}</div>
+          </div>
+          <div>
+            <div className="p-exp__role">{role}</div>
+            <ul className="p-exp__bullets">
+              {bullets.map((b, i) => <li key={i}>{b}</li>)}
+            </ul>
+          </div>
+        </div>
+      ))}
+    </Section>
+  );
 }
 
 /* ── Projects ── */
 function Projects() {
-    const featured = PROJECTS.filter(p => p.featured);
-    const rest = PROJECTS.filter(p => !p.featured);
+  const featured = PROJECTS.filter(p => p.featured);
+  const rest = PROJECTS.filter(p => !p.featured);
 
-    return (
-        <Section id="projects" num="03" title="Projects" noPadBody>
-            <div className="p-projects">
+  return (
+    <Section id="projects" num="03" title="Projects" noPadBody>
+      <div className="p-projects">
 
-                {/* Featured (full-width) */}
-                {featured.map(p => (
-                    <div key={p.num} className="p-project p-project--featured">
-                        <div className="p-project__num">{p.num}</div>
-                        <div className="p-project__name">{p.name}</div>
-                        <div className="p-project__date">{p.date}</div>
-                        <div className="p-project__stack">
-                            {p.stack.map(s => <span key={s} className="p-project__tag">{s}</span>)}
-                        </div>
-                        <p className="p-project__desc">{p.desc}</p>
-                        <ul className="p-project__bullets">
-                            {p.bullets.map((b, i) => <li key={i}>{b}</li>)}
-                        </ul>
-                        {p.github && (
-                            <a href={p.github} target="_blank" rel="noopener noreferrer" className="p-project__link">
-                                github →
-                            </a>
-                        )}
-                    </div>
-                ))}
-
-                {/* Remaining projects: card + video pairs */}
-                {rest.map((p, i) => {
-                    const isEven = i % 2 === 0;
-                    const card = (
-                        <div key={`card-${p.num}`} className="p-project">
-                            <div className="p-project__num">{p.num}</div>
-                            <div className="p-project__name">{p.name}</div>
-                            <div className="p-project__date">{p.date}</div>
-                            <div className="p-project__stack">
-                                {p.stack.map(s => <span key={s} className="p-project__tag">{s}</span>)}
-                            </div>
-                            <p className="p-project__desc">{p.desc}</p>
-                            <ul className="p-project__bullets">
-                                {p.bullets.map((b, j) => <li key={j}>{b}</li>)}
-                            </ul>
-                            {p.github && (
-                                <a href={p.github} target="_blank" rel="noopener noreferrer" className="p-project__link">
-                                    github →
-                                </a>
-                            )}
-                        </div>
-                    );
-                    const videoCell = p.video ? (
-                        <div key={`vid-${p.num}`} className="p-project p-project--video">
-                            <video src={p.video} autoPlay muted loop playsInline />
-                        </div>
-                    ) : (
-                        <div key={`empty-${p.num}`} className="p-project" style={{ background: 'var(--paper-mid)' }} />
-                    );
-
-                    return isEven ? [card, videoCell] : [videoCell, card];
-                })}
-
+        {/* Featured (full-width) */}
+        {featured.map(p => (
+          <div key={p.num} className="p-project p-project--featured">
+            <div className="p-project__num">{p.num}</div>
+            <div className="p-project__name">{p.name}</div>
+            <div className="p-project__date">{p.date}</div>
+            <div className="p-project__stack">
+              {p.stack.map(s => <span key={s} className="p-project__tag">{s}</span>)}
             </div>
-        </Section>
-    );
+            <p className="p-project__desc">{p.desc}</p>
+            <ul className="p-project__bullets">
+              {p.bullets.map((b, i) => <li key={i}>{b}</li>)}
+            </ul>
+            {p.github && (
+              <a href={p.github} target="_blank" rel="noopener noreferrer" className="p-project__link">
+                github →
+              </a>
+            )}
+          </div>
+        ))}
+
+        {/* Remaining projects: card + video pairs */}
+        {rest.map((p, i) => {
+          const isEven = i % 2 === 0;
+          const card = (
+            <div key={`card-${p.num}`} className="p-project">
+              <div className="p-project__num">{p.num}</div>
+              <div className="p-project__name">{p.name}</div>
+              <div className="p-project__date">{p.date}</div>
+              <div className="p-project__stack">
+                {p.stack.map(s => <span key={s} className="p-project__tag">{s}</span>)}
+              </div>
+              <p className="p-project__desc">{p.desc}</p>
+              <ul className="p-project__bullets">
+                {p.bullets.map((b, j) => <li key={j}>{b}</li>)}
+              </ul>
+              {p.github && (
+                <a href={p.github} target="_blank" rel="noopener noreferrer" className="p-project__link">
+                  github →
+                </a>
+              )}
+            </div>
+          );
+          const videoCell = p.video ? (
+            <div key={`vid-${p.num}`} className="p-project p-project--video">
+              <video src={p.video} autoPlay muted loop playsInline />
+            </div>
+          ) : (
+            <div key={`empty-${p.num}`} className="p-project" style={{ background: 'var(--paper-mid)' }} />
+          );
+
+          return isEven ? [card, videoCell] : [videoCell, card];
+        })}
+
+      </div>
+    </Section>
+  );
 }
 
 /* ── Education ── */
 function Education() {
-    return (
-        <Section id="education" num="04" title="Education &amp; Certifications" noPadBody>
-            <div className="p-edu">
-                <div className="p-edu__block">
-                    <div className="p-edu__degree">MSc, Artificial Intelligence and Robotics</div>
-                    <div className="p-edu__school">University of Hertfordshire</div>
-                    <div className="p-edu__period">Jan 2024 — May 2025</div>
-                    <span className="p-edu__badge">Distinction</span>
-                    <p className="p-edu__thesis">
-                        Thesis: Optimised Perception System for Real-Time Object Detection in Autonomous Racing Vehicles using YOLOv9 and TensorRT
-                    </p>
+  return (
+    <Section id="education" num="04" title="Education &amp; Certifications" noPadBody>
+      <div className="p-edu">
+        <div className="p-edu__block">
+          <div className="p-edu__degree">MSc, Artificial Intelligence and Robotics</div>
+          <div className="p-edu__school">University of Hertfordshire</div>
+          <div className="p-edu__period">Jan 2024 — May 2025</div>
+          <span className="p-edu__badge">Distinction</span>
+          <p className="p-edu__thesis">
+            Thesis: Optimised Perception System for Real-Time Object Detection in Autonomous Racing Vehicles using YOLOv9 and TensorRT
+          </p>
 
-                    <div className="p-edu__spacer">
-                        <div className="p-edu__degree">B.Tech., Computer Science and Engineering</div>
-                        <div className="p-edu__school">APJ Abdul Kalam Technological University</div>
-                        <div className="p-edu__period">Aug 2019 — Aug 2023</div>
-                        <span className="p-edu__badge">Distinction</span>
-                    </div>
-                </div>
-                <div className="p-edu__block">
-                    <div className="p-edu__cat">Certifications</div>
-                    <ul className="p-certs">
-                        {CERTS.map(c => <li key={c} className="p-cert">{c}</li>)}
-                    </ul>
-                </div>
-            </div>
-        </Section>
-    );
+          <div className="p-edu__spacer">
+            <div className="p-edu__degree">B.Tech., Computer Science and Engineering</div>
+            <div className="p-edu__school">APJ Abdul Kalam Technological University</div>
+            <div className="p-edu__period">Aug 2019 — Aug 2023</div>
+            <span className="p-edu__badge">Distinction</span>
+          </div>
+        </div>
+        <div className="p-edu__block">
+          <div className="p-edu__cat">Certifications</div>
+          <ul className="p-certs">
+            {CERTS.map(c => <li key={c} className="p-cert">{c}</li>)}
+          </ul>
+        </div>
+      </div>
+    </Section>
+  );
 }
 
 /* ── Footer ── */
 function Footer() {
-    return (
-        <footer className="p-footer">
-            <span className="p-footer__copy">
-                © {new Date().getFullYear()} Athul Krishna Renjith — Built with React &amp; Tailwind CSS
-            </span>
-            <span className="p-footer__tagline">Perception · Locomotion · Autonomy</span>
-        </footer>
-    );
+  return (
+    <footer className="p-footer">
+      <span className="p-footer__copy">
+        © {new Date().getFullYear()} Athul Krishna Renjith — Built with React &amp; Tailwind CSS
+      </span>
+      <span className="p-footer__tagline">Perception · Locomotion · Autonomy</span>
+    </footer>
+  );
 }
 
 /* ─────────────────────────────────────────────
@@ -1075,23 +1059,23 @@ function Footer() {
    currently in view.
 ───────────────────────────────────────────── */
 function useActiveSection(sectionIds) {
-    const [active, setActive] = useState('');
+  const [active, setActive] = useState('');
 
-    useEffect(() => {
-        const observers = sectionIds.map(id => {
-            const el = document.getElementById(id);
-            if (!el) return null;
-            const obs = new IntersectionObserver(
-                ([entry]) => { if (entry.isIntersecting) setActive(id); },
-                { threshold: 0.3 }
-            );
-            obs.observe(el);
-            return obs;
-        });
-        return () => observers.forEach(o => o && o.disconnect());
-    }, [sectionIds]);
+  useEffect(() => {
+    const observers = sectionIds.map(id => {
+      const el = document.getElementById(id);
+      if (!el) return null;
+      const obs = new IntersectionObserver(
+        ([entry]) => { if (entry.isIntersecting) setActive(id); },
+        { threshold: 0.3 }
+      );
+      obs.observe(el);
+      return obs;
+    });
+    return () => observers.forEach(o => o && o.disconnect());
+  }, [sectionIds]);
 
-    return active;
+  return active;
 }
 
 /* ─────────────────────────────────────────────
@@ -1100,21 +1084,21 @@ function useActiveSection(sectionIds) {
 const SECTION_IDS = ['hero', 'skills', 'experience', 'projects', 'education'];
 
 export default function Landing() {
-    const activeSection = useActiveSection(SECTION_IDS);
+  const activeSection = useActiveSection(SECTION_IDS);
 
-    return (
-        <>
-            <GlobalStyles />
-            <Nav activeSection={activeSection} />
-            <div className="p-main">
-                <MobileNav />
-                <Hero />
-                <Skills />
-                <Experience />
-                <Projects />
-                <Education />
-                <Footer />
-            </div>
-        </>
-    );
+  return (
+    <>
+      <GlobalStyles />
+      <Nav activeSection={activeSection} />
+      <div className="p-main">
+        <MobileNav />
+        <Hero />
+        <Skills />
+        <Experience />
+        <Projects />
+        <Education />
+        <Footer />
+      </div>
+    </>
+  );
 }
