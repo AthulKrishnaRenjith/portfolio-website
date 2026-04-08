@@ -858,8 +858,7 @@ function Hero() {
           Athul<br /><em>Krishna</em><br />Renjith
         </h1>
         <p className="p-hero__lede">
-          Delivering real-time autonomy on embedded hardware.
-          Turning perception and SLAM research into production-ready systems.
+          Robotics Engineer specialising in real-time perception, SLAM, and embedded autonomy for safety-critical platforms.
         </p>
         <div className="p-hero__ctas">
           <a href="mailto:renjith.athul.krishna@gmail.com" className="p-hero__cta p-hero__cta--amber">
