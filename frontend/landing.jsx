@@ -730,6 +730,7 @@ const PROJECTS = [
       'Transferred policy from MuJoCo to Webots via ONNX, adapting sensor models for physics differences',
       'Reduced sim-to-real gap to <5% through systematic transfer and real-world validation',
     ],
+    github: 'https://github.com/AthulKrishnaRenjith/mujoco',
   },
   {
     num: '03',
@@ -747,7 +748,7 @@ const PROJECTS = [
   },
   {
     num: '04',
-    name: 'Autonomous Racing Perception',
+    name: 'Real-Time Perception for Autonomous Racing Vehicles',
     date: 'Jan 2025 - Jul 2025',
     stack: ['YOLOv9', 'TensorRT', 'Jetson Orin', 'ROS2 Foxy'],
     desc: 'Low-latency object detection pipeline for Formula Student autonomous race cars.',
