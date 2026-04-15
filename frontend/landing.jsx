@@ -3,7 +3,7 @@ import { FaGithub, FaEnvelope } from 'react-icons/fa';
 import { FaLinkedin } from 'react-icons/fa';
 import strideDemo from './assets/stride_demo.mp4';
 import uhRacingDemo from './assets/uh_racing_demo.mp4';
-import osuBeatmapDemo from './assets/osu_beatmap_demo.mp4';
+import webotsDemo from './assets/webots_demo.mp4';
 import profileImage from './assets/photo_formal.jpg';
 
 /* ─────────────────────────────────────────────
@@ -731,6 +731,7 @@ const PROJECTS = [
       'Reduced sim-to-real gap to <5% through systematic transfer and real-world validation',
     ],
     github: 'https://github.com/AthulKrishnaRenjith/mujoco',
+    video: webotsDemo,
   },
   {
     num: '03',
