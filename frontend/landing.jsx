@@ -432,8 +432,12 @@ const STYLES = `
     border-right: none;
   }
   .p-project--video {
-    padding: 0;
-    overflow: hidden;
+    padding: 1.5rem;
+    overflow: visible;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--paper-mid);
   }
   .p-project--video video {
     width: 100%;
@@ -441,6 +445,8 @@ const STYLES = `
     object-fit: cover;
     display: block;
     min-height: 260px;
+    border: 2px solid var(--paper-dark);
+    border-radius: 4px;
   }
   .p-project__num {
     font-family: var(--serif);
@@ -1003,7 +1009,7 @@ function Projects() {
           );
           const videoCell = p.video ? (
             <div key={`vid-${p.num}`} className="p-project p-project--video">
-              <video src={p.video} autoPlay muted loop playsInline />
+              <video src={p.video} autoPlay muted loop playsInline preload="none" />
             </div>
           ) : (
             <div key={`empty-${p.num}`} className="p-project" style={{ background: 'var(--paper-mid)' }} />
