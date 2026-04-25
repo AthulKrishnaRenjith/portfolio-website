@@ -432,12 +432,12 @@ const STYLES = `
     border-right: none;
   }
   .p-project--video {
-    padding: 1.5rem;
+    padding: 2rem;
     overflow: visible;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--paper-mid);
+    background: var(--paper);
   }
   .p-project--video video {
     width: 100%;
@@ -445,8 +445,8 @@ const STYLES = `
     object-fit: cover;
     display: block;
     min-height: 260px;
-    border: 2px solid var(--paper-dark);
-    border-radius: 4px;
+    border: 3px solid var(--ink);
+    box-shadow: inset 0 0 0 1px var(--paper-dark);
   }
   .p-project__num {
     font-family: var(--serif);
